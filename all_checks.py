@@ -25,16 +25,28 @@ def check_root_full():
     """Devuelve True si la particion root esta llena, Falso en cualquier caso"""
     return check_disk_full(disk ="/", min_gb = 2, min_percent = 10)
 
+def check_no_network():
+    """Devuelve True si no resuelve la pagina de google, Falso en caso contrario"""
+    try:
+        socket.gethostbyname("www.google.com")
+        return False
+    except:
+        return True
+
 def main():
     checks = [
         (check_reboot, "Pending reboot"),
         (check_root_full, "Root partition full"),
+        (check_no_network, "No working network"),
     ]
     todo_ok = True
     for check, msg in checks:
         if check():
             print (msg)
-            sys.exit(1)
+            todo_ok=False
+
+    if not todo_ok:
+        sys.exit(1)
 
     print ("Todo ok.")
     sys.exit(0)
